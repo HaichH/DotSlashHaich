@@ -16,6 +16,8 @@ namespace DotSlashHaich.TypeLibrary
         public double AverageRed { get; set; }
         public double AverageGreen { get; set; }
         public double AverageBlue { get; set; }
+        public double OriginalWidth { get; set; }
+        public double OriginalHeight { get; set; }
 
         /// <summary>
         /// Gets an image source 
@@ -24,7 +26,6 @@ namespace DotSlashHaich.TypeLibrary
         /// <returns>true, if image exists, otherwise returns false if doesn't exist</returns>
        public bool getImageSource(string imageLocation)
         {
-            int stopHere = 0;
             if (File.Exists(imageLocation))
             {
                 ImageLocation = imageLocation;
@@ -40,6 +41,8 @@ namespace DotSlashHaich.TypeLibrary
         {
             List<Bitmap> blocks = new List<Bitmap>();
             Bitmap imageRaw = new Bitmap(ImageLocation);
+            OriginalWidth = imageRaw.Width;
+            OriginalHeight = imageRaw.Height;
             int partWidth = imageRaw.Width / x;
             int partHeight = imageRaw.Height / y;
             int totalBlocksInWidth = imageRaw.Width / partWidth;
@@ -51,8 +54,10 @@ namespace DotSlashHaich.TypeLibrary
 
                 for (int Y = 0; Y < totalBlocksInHeight*partHeight; Y+= partHeight)
                 {
-                        Rectangle rct = new Rectangle(X, Y, partWidth, partHeight);
-                        blocks.Add(imageRaw.Clone(rct, System.Drawing.Imaging.PixelFormat.DontCare));
+                    Rectangle rct = new Rectangle(X, Y, partWidth, partHeight);
+                   // Bitmap mp = imageRaw.Clone(rct, System.Drawing.Imaging.PixelFormat.DontCare);
+                   // mp.Save("snip\\output" + (X +"c"+ Y)+".jpg");
+                    blocks.Add(imageRaw.Clone(rct, System.Drawing.Imaging.PixelFormat.DontCare));
                 }
             }
 

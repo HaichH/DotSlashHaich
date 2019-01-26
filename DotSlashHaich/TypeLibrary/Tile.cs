@@ -56,6 +56,7 @@ namespace DotSlashHaich.TypeLibrary
                 //bring file into program for manipulation
                 Bitmap imageRaw = new Bitmap(tileLocation, true);
                 t.width = imageRaw.Width;
+                t.FolderLocation = tileLocation;
                 t.height = imageRaw.Height;
                 string[] loc = tileLocation.Split('\\');
                 t.imageName = loc[loc.Length-1];
@@ -88,6 +89,7 @@ namespace DotSlashHaich.TypeLibrary
             foreach (Tile item in t)
             {
                 Tile tObj = new Tile();
+                tObj.FolderLocation = item.FolderLocation;
                 tObj.imageName = item.imageName;
                 tObj.averageRed = (int)item.red.Average();
                 tObj.averageGreen = (int)item.green.Average();
