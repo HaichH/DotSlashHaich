@@ -20,7 +20,7 @@ namespace DotSlashHaich.TypeLibrary
         public double averageRed;
         public double averageGreen;
         public double averageBlue;
-
+        public double distance;
 
         public bool getFolderSource(string folderLocation)
         {

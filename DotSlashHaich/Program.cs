@@ -4,7 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DotSlashHaich.TypeLibrary;
+using ColorMine.ColorSpaces.Comparisons;
+using ColorMine.ColorSpaces.Conversions;
 using System.Drawing;
+using ColorMine.ColorSpaces;
+using System.IO;
+using System.Drawing.Imaging;
 
 namespace DotSlashHaich
 {
@@ -57,11 +62,52 @@ namespace DotSlashHaich
             foreach (TypeLibrary.Image item in blockListRGB)
             {
                 Console.WriteLine("Block#: {0} => Average Red: {1} => Average Green: {2} => Average Blue: {3}",++i , item.AverageRed, item.AverageGreen, item.AverageBlue);
+
+                /*5 & 6: Calculate Distance and find tiles with smallest distance and replace image block*/
+                double lowest = -3000;
+                //convert current block into lab 
+                var blockRgb = new Rgb {R = (int)item.AverageRed, G= (int)item.AverageGreen, B= (int)item.AverageBlue };
+                var blockCLab = blockRgb.To<Lab>();
+                foreach (Tile tile in averages)
+                {
+                    //convert tile into lab & also keep track of distance between the two 
+                    var tileRgb = new Rgb {R= (int) tile.averageRed, G = (int) tile.averageGreen, B= tile.averageBlue };
+                    var tileCLab = tileRgb.To<Lab>();
+
+                    //get the distance of the tile from the block. 
+                    tile.distance = new Cie1976Comparison().Compare(blockCLab, tileCLab);
+                    lowest = Math.Min(lowest, tile.distance); 
+                }
+
+                // now to replace block with appropriate tile
+                foreach (Tile tile in averages)
+                {
+                    if (tile.distance == lowest)
+                    {
+                        //get current block
+                        Bitmap currentBlock = imageBlocks[i];
+                        //override currentBlock with tile-image from computer
+                        currentBlock = new Bitmap(System.Drawing.Image.FromFile(tile.FolderLocation), currentBlock.Width, currentBlock.Height);
+                        
+                    }
+                }
+                //increment variable that tells us which block we on. 
+                i++;
+
             }
             Console.WriteLine(new string('=', 7) + "End of snippet" + new string('=', 6));
-            
-            /*5 */
-            
+
+            /*7: Saving image */
+            MemoryStream stream = new MemoryStream();
+            foreach (Bitmap item in imageBlocks)
+            {
+                item.Save(stream, ImageFormat.Jpeg);
+       
+            }
+
+            System.Drawing.Image newImg = System.Drawing.Image.FromStream(stream);
+            newImg.Save("output.jpg");
+
 
             Console.WriteLine("Done");
             Console.ReadLine();
