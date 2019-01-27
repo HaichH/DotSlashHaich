@@ -29,8 +29,6 @@ namespace DotSlashHaich
     /// </summary>
     class Program
     {
-        string defaultImageLocation = "";
-        string defaultFolderLocation = "";
        static TypeLibrary.Image img = new TypeLibrary.Image();
        static Tile tile = new Tile();
 
@@ -55,7 +53,6 @@ namespace DotSlashHaich
             
             List<Bitmap> imageBlocks = img.breakImageDown(20,20);
             List<TypeLibrary.Image> blockListRGB = img.getBlockRGBAvg(imageBlocks);
-            
             Console.WriteLine(new string('=', 25));
             Console.WriteLine("Average RGB from all blocks: ");
             int i = 0;
@@ -90,8 +87,6 @@ namespace DotSlashHaich
                         Bitmap currentBlock = imageBlocks[i];
                         //override currentBlock with tile-image from computer
                         imageBlocks[i] = new Bitmap(System.Drawing.Image.FromFile(tile.FolderLocation), currentBlock.Width, currentBlock.Height);
-                       // currentBlock.Save("snip\\output" + i+".jpg");
-                       
                     }
                 }
                // increment variable that tells us which block we on.
@@ -101,30 +96,7 @@ namespace DotSlashHaich
             Console.WriteLine(new string('=', 7) + "End of snippet" + new string('=', 6));
 
             /*7: Saving image */
-            //Graphics grap = Graphics.FromImage(newImg);
-            //// grap.DrawImage(newImg, new PointF(x,y));
-            //grap.DrawImage(item, x, y, item.Width, item.Height);
-            //x += item.Width;
-            //y += item.Height;
-            Bitmap newImg = new Bitmap((int)img.OriginalWidth, (int)img.OriginalWidth);
-            int xLoc = 0;
-            int yLoc = 0;
-            for (int I = 0; I < imageBlocks.Count; I++)
-            {
-                Bitmap tileProc = imageBlocks[I];
-                Graphics grap = Graphics.FromImage(newImg);
-
-                if(xLoc>= newImg.Width)
-                {
-                    yLoc += tileProc.Height;
-                    xLoc = 0;
-                }
-                grap.DrawImage(tileProc, xLoc, yLoc, tileProc.Width, tileProc.Height);
-                xLoc += tileProc.Width;
-              
-            }
-            int zeiler =0;
-            newImg.Save("output.jpg");
+            img.DrawMosaic(imageBlocks, img).Save("output.jpg");
             Console.WriteLine("Done");
             Console.ReadLine();
         }

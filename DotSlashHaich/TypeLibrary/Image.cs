@@ -16,8 +16,8 @@ namespace DotSlashHaich.TypeLibrary
         public double AverageRed { get; set; }
         public double AverageGreen { get; set; }
         public double AverageBlue { get; set; }
-        public double OriginalWidth { get; set; }
-        public double OriginalHeight { get; set; }
+        public int OriginalWidth { get; set; }
+        public int OriginalHeight { get; set; }
 
         /// <summary>
         /// Gets an image source 
@@ -37,30 +37,34 @@ namespace DotSlashHaich.TypeLibrary
             }
         }
 
-        public List<Bitmap> breakImageDown(int x, int y)
+        public List<Bitmap> breakImageDown(int width, int height)
         {
             List<Bitmap> blocks = new List<Bitmap>();
             Bitmap imageRaw = new Bitmap(ImageLocation);
             OriginalWidth = imageRaw.Width;
             OriginalHeight = imageRaw.Height;
-            int partWidth = imageRaw.Width / x;
-            int partHeight = imageRaw.Height / y;
+            int partWidth = imageRaw.Width / width;
+            int partHeight = imageRaw.Height / height;
             int totalBlocksInWidth = imageRaw.Width / partWidth;
+            OriginalWidth = totalBlocksInWidth * partWidth;
             int totalBlocksInHeight = imageRaw.Height / partHeight;
+            OriginalHeight = totalBlocksInHeight * partHeight;
             int totalBlocks = totalBlocksInWidth * totalBlocksInHeight;
-
-            for (int X = 0; X < totalBlocksInWidth* partWidth; X+=partWidth)
+            int x = 0;
+            int y = 0;
+            for (int X = 0; X < totalBlocksInWidth* partWidth; X++)
             {
-
-                for (int Y = 0; Y < totalBlocksInHeight*partHeight; Y+= partHeight)
+                if (x>=totalBlocksInWidth*partWidth)
                 {
-                    Rectangle rct = new Rectangle(X, Y, partWidth, partHeight);
-                   // Bitmap mp = imageRaw.Clone(rct, System.Drawing.Imaging.PixelFormat.DontCare);
-                   // mp.Save("snip\\output" + (X +"c"+ Y)+".jpg");
-                    blocks.Add(imageRaw.Clone(rct, System.Drawing.Imaging.PixelFormat.DontCare));
+                    x = 0;
+                    y += partHeight;
                 }
-            }
 
+                Rectangle rct = new Rectangle(x, y, partWidth, partHeight);
+                Bitmap mp = imageRaw.Clone(rct, System.Drawing.Imaging.PixelFormat.DontCare); 
+                blocks.Add(imageRaw.Clone(rct, System.Drawing.Imaging.PixelFormat.DontCare));
+                x += partWidth;
+            }
             return blocks;
         }
 
@@ -94,6 +98,27 @@ namespace DotSlashHaich.TypeLibrary
             return l;
         }
 
+        public Bitmap DrawMosaic(List<Bitmap> s, Image self)
+        {
+            
+            Bitmap bitmap = new Bitmap(self.OriginalWidth, self.OriginalHeight);
+            using (Graphics g = Graphics.FromImage(bitmap))
+            {
+                int x = 0;
+                int y = 0;
+                foreach (Bitmap item in s)
+                {
+                    if (x>= bitmap.Width)
+                    {
+                        x = 0;
+                        y += item.Height;
+                    }
+                    g.DrawImage(item, x, y);
+                    x += item.Width;
+                }
+            }
 
+            return bitmap;
+        }
     }
 }
